@@ -21,7 +21,7 @@ For local setup if you have your own Nvidia GPU, you can use the provided Docker
 The instructions below are also contained within the build directory of the starter code.
 Requirements are a NVIDIA GPU with the latest driver installed and docker or nvidia-docker.
 
-### build the image
+### Build the image
 
     docker build -t project-dev -f Dockerfile .
 
@@ -29,10 +29,10 @@ Requirements are a NVIDIA GPU with the latest driver installed and docker or nvi
 
     docker run --gpus all -v <PATH TO LOCAL PROJECT FOLDER>:/app/project/ --network=host -ti project-dev bash
 
-### install gsutils 
+### Install gsutils 
     curl https://sdk.cloud.google.com | bash
 
-### login to gutils
+### Login to gutils
     gcloud auth login
 
 ### For further information
