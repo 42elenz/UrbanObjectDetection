@@ -7,83 +7,81 @@ With object detection, the vehicle can identify other vehicles, pedestrians, and
 This is particularly important in situations where the vehicle needs to make decisions quickly, such as when changing lanes or avoiding obstacles. 
 By using AI for object detection, the vehicle can process and analyze large amounts of data in real time, enabling it to make more accurate and reliable decisions.
 
-## Setup
+# Setup
 
-# Install Prerequisites
+### Install Prerequisites
 
-pip -r requirements.txt
+    pip -r requirements.txt
 
 I was able to use the Udacity-Workspace for this project that had all the necessary libraries and data already available. If you want to use a local setup, you can use the below instructions for a Docker container if using your own local GPU, or otherwise creating a similar environment on a cloud provider's GPU instance.
 
-# Docker Setup
+### Docker Setup
 
 For local setup if you have your own Nvidia GPU, you can use the provided Dockerfile and requirements in the build directory of the starter code.
 The instructions below are also contained within the build directory of the starter code.
 Requirements are a NVIDIA GPU with the latest driver installed and docker or nvidia-docker.
 
-# build the image
+### build the image
 
-docker build -t project-dev -f Dockerfile .
+    docker build -t project-dev -f Dockerfile .
 
-# Create a container :
+### Create a container :
 
-docker run --gpus all -v <PATH TO LOCAL PROJECT FOLDER>:/app/project/ --network=host -ti project-dev bash
+    docker run --gpus all -v <PATH TO LOCAL PROJECT FOLDER>:/app/project/ --network=host -ti project-dev bash
 
-# install gsutils 
-curl https://sdk.cloud.google.com | bash
+### install gsutils 
+    curl https://sdk.cloud.google.com | bash
 
-# login to gutils
-gcloud auth login
+### login to gutils
+    gcloud auth login
 
-# For further information
+### For further information
+
 https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/install.html#tensorflow-object-detection-api-installation
 
-## Data
+# Data
 
 For this project, the [Waymo Open dataset] was used (https://waymo.com/open/). Udacity provided the necessary data on their working space. 
 
 For a local Setup the files can be downloaded directly from the website as tar files or from the [Google Cloud Bucket](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files/).
 
-# Download and trim subset of the data
+### Download and trim subset of the data
 
-python download_process.py --data_dir {processed_file_location} --size {number of files you want to download}
+    python download_process.py --data_dir {processed_file_location} --size {number of files you want to download}
 
-# Split the data into train, test and valdation
+### Split the data into train, test and valdation
 
-python create_splits.py --data-dir /home/workspace/data
+    python create_splits.py --data-dir /home/workspace/data
 
-## Running the model
+# Running the model
 
 The Tf Object Detection API relies on config files. The pipeline.config is a config for a SSD Resnet 50 640x640 model.
 
-# Download the pretrained model
+### Download the pretrained model
 
-cd /home/workspace/experiments/pretrained_model/
+    cd /home/workspace/experiments/pretrained_model/
+    wget http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
+    tar -xvzf ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
+    rm -rf ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
 
-wget http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
+### Train the model 
 
-tar -xvzf ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
+    python experiments/model_main_tf2.py --model_dir=experiments/reference/ --pipeline_config_path=experiments/reference/pipeline_new.config
 
-rm -rf ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
+### Evaluate the model 
 
-# train the model 
+    python experiments/model_main_tf2.py --model_dir=experiments/reference/ --pipeline_config_path=experiments/reference/pipeline_new.config   --checkpoint_dir=experiments/reference/
 
-python experiments/model_main_tf2.py --model_dir=experiments/reference/ --pipeline_config_path=experiments/reference/pipeline_new.config
+### Export the trained model 
 
-# evaluate the model 
-
-python experiments/model_main_tf2.py --model_dir=experiments/reference/ --pipeline_config_path=experiments/reference/pipeline_new.config --checkpoint_dir=experiments/reference/
-
-# export the trained model 
-
-python experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path experiments/reference/pipeline_new.config --trained_checkpoint_dir experiments/reference/ --output_directory experiments/reference/exported/
+    python experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path experiments/reference/pipeline_new.config --trained_checkpoint_dir experiments/reference/ --output_directory experiments/reference/exported/
 
 
-# create visualization
+### Create visualization
 
-python inference_video.py --labelmap_path label_map.pbtxt --model_path experiments/reference/exported/saved_model --tf_record_path data/test/segment-12200383401366682847_2552_140_2572_140_with_camera_labels.tfrecord --config_path experiments/reference/pipeline_new.config --output_path animation.gif
+    python inference_video.py --labelmap_path label_map.pbtxt --model_path experiments/reference/exported/saved_model --tf_record_path data/test/segment-12200383401366682847_2552_140_2572_140_with_camera_labels.tfrecord --config_path experiments/reference/pipeline_new.config --output_path animation.gif
 
-### Experiments
+# Experiments
 The experiments folder is organized as follow:
 ```
 experiments/
@@ -95,7 +93,7 @@ experiments/
     - label_map.pbtxt
 ```
 
-### Exploratory Data Analysis
+# Exploratory Data Analysis
 
 For an inital data exploration, 10 images were read from the dataset and plotted including the corresponding ground truth bounding boxes. The bounding boxes were color coded to differentiate between labels, red for cars, blue for pedestrians and green for cyclists. The images revealed differing weather conditions, strongly fluctuating amount of target objects and various settings. Some of the pictures and graphs are provided below. For more visualizatio got to the [exploratory data analysis notebook](https://github.com/solanhaben/UrbanObjectDetection/blob/main/Exploratory%20Data%20Analysis.ipynb).
 
@@ -119,11 +117,14 @@ Lastly the label count for each each picture was calculated and plotted on a fre
 
 ### Cross Validation
 
-    Inside of the Udacity Workspace the train/test/validation split was already provided and splitted the dataset into:
-    - train: containing 86 files
-    - val: containing 10 files
-    - test - containing 3 files
+Inside of the Udacity Workspace the train/test/validation split was already provided and splitted the dataset into:
+- train: containing 86 files
+- val: containing 10 files
+- test - containing 3 files
 
+In general however I would suggest a stratified k-Fold cross-validation as we are faceing a large imbalance of the target value in the dataset.
+Stratified k-Fold is a variation of the standard k-Fold CV technique which is designed to be effective in such cases of target imbalance.
+It works as follows. Stratified k-Fold splits the dataset on k folds such that each fold contains approximately the same percentage of samples of each target class as the complete set. 
 
 ### Training
 
@@ -135,17 +136,17 @@ For an IoU treshold average of [0.5, .95] Average Precision showed 0.000 over al
 
 <img src="https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/ref_metric.png" width="350">
 
-### Improve the performances
+# Improve the performances
 
-# Data Augmentation Strategy
+## Data Augmentation Strategy
 
 Using the https://github.com/tensorflow/models/blob/master/research/object_detection/protos/preprocessor.proto file containing available augmentations in the Tf Object Detection API different modifications were explored and visualized. Based on the findings in the data exploration horizonal flipping was used to combat unbalanced centering of objects. To equalize the mostly dark picture discovered in the brightness analysis, random brightness adjustments were incorporated. Lastly to mimic weather conditions that distort the picture quality patching gaussian augmentation, random adjustment of contrast and saturation were applied.
 
-# Hyperparameter Tuning
+## Hyperparameter Tuning
 
 To allow model convergence, the optimizer learning rate was adjusted to 0.004, the warmup learning rate to 0.0013333 and total steps were increased to 4000. Batch size was increased from 2 to 8 to better estimate the direction of the gradient but still garanty a fast enough learning for the scope of this course.
 
-# Result
+## Result
  
 Compared to the reference model the loss decreased with training steps and reached an overall lower level. This is an indicator of better performance.
 
@@ -161,6 +162,6 @@ This gif the shows the improved model performance on a sample set of test-images
 ![alt text](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/animation.gif "Improved_Metric")
 
 
-# Further improvements
+## Further improvements
 
 To further increase model performance other pre-trained models could be considered. On top of that more data especially including the underrepresented labels should be used. To better detect small objects increasing image capture resolution and model input resolution is advised and additional data augmentations such as random cropping and tiling should be considered. Due to lacking ressources and limited time these steps will be taken up in future improvements.
