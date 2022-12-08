@@ -1,20 +1,87 @@
 # Object Detection in an Urban Environment
 
+# Importance
+
+Object detection with AI is important for automated driving because it allows the vehicle to understand its environment and make decisions based on that understanding.
+With object detection, the vehicle can identify other vehicles, pedestrians, and other objects in the environment and use that information to navigate safely and efficiently. 
+This is particularly important in situations where the vehicle needs to make decisions quickly, such as when changing lanes or avoiding obstacles. 
+By using AI for object detection, the vehicle can process and analyze large amounts of data in real time, enabling it to make more accurate and reliable decisions.
+
+## Setup
+
+# Install Prerequisites
+
+pip -r requirements.txt
+
+I was able to use the Udacity-Workspace for this project that had all the necessary libraries and data already available. If you want to use a local setup, you can use the below instructions for a Docker container if using your own local GPU, or otherwise creating a similar environment on a cloud provider's GPU instance.
+
+# Docker Setup
+
+For local setup if you have your own Nvidia GPU, you can use the provided Dockerfile and requirements in the build directory of the starter code.
+The instructions below are also contained within the build directory of the starter code.
+Requirements are a NVIDIA GPU with the latest driver installed and docker or nvidia-docker.
+
+# build the image
+
+docker build -t project-dev -f Dockerfile .
+
+# Create a container :
+
+docker run --gpus all -v <PATH TO LOCAL PROJECT FOLDER>:/app/project/ --network=host -ti project-dev bash
+
+# install gsutils 
+curl https://sdk.cloud.google.com | bash
+
+# login to gutils
+gcloud auth login
+
+# For further information
+https://tensorflow-object-detection-api-tutorial.readthedocs.io/en/latest/install.html#tensorflow-object-detection-api-installation
+
 ## Data
 
-For this project, the [Waymo Open dataset] was used (https://waymo.com/open/).
+For this project, the [Waymo Open dataset] was used (https://waymo.com/open/). Udacity provided the necessary data on their working space. 
 
-The files can be downloaded directly from the website as tar files or from the [Google Cloud Bucket](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files/) as individual tf records. For this project the data was already provided within a udacity workingspace
+For a local Setup the files can be downloaded directly from the website as tar files or from the [Google Cloud Bucket](https://console.cloud.google.com/storage/browser/waymo_open_dataset_v_1_2_0_individual_files/).
 
-## Structure
+# Download and trim subset of the data
 
-The data used for training, validation and testing is organized as follow:
-```
-data/
-    - train: contains 86 files for model training
-    - val: contains 10 files for model validation
-    - test: contains 3 files to test the model and create inference videos
-```
+python download_process.py --data_dir {processed_file_location} --size {number of files you want to download}
+
+# Split the data into train, test and valdation
+
+python create_splits.py --data-dir /home/workspace/data
+
+## Running the model
+
+The Tf Object Detection API relies on config files. The pipeline.config is a config for a SSD Resnet 50 640x640 model.
+
+# Download the pretrained model
+
+cd /home/workspace/experiments/pretrained_model/
+
+wget http://download.tensorflow.org/models/object_detection/tf2/20200711/ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
+
+tar -xvzf ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
+
+rm -rf ssd_resnet50_v1_fpn_640x640_coco17_tpu-8.tar.gz
+
+# train the model 
+
+python experiments/model_main_tf2.py --model_dir=experiments/reference/ --pipeline_config_path=experiments/reference/pipeline_new.config
+
+# evaluate the model 
+
+python experiments/model_main_tf2.py --model_dir=experiments/reference/ --pipeline_config_path=experiments/reference/pipeline_new.config --checkpoint_dir=experiments/reference/
+
+# export the trained model 
+
+python experiments/exporter_main_v2.py --input_type image_tensor --pipeline_config_path experiments/reference/pipeline_new.config --trained_checkpoint_dir experiments/reference/ --output_directory experiments/reference/exported/
+
+
+# create visualization
+
+python inference_video.py --labelmap_path label_map.pbtxt --model_path experiments/reference/exported/saved_model --tf_record_path data/test/segment-12200383401366682847_2552_140_2572_140_with_camera_labels.tfrecord --config_path experiments/reference/pipeline_new.config --output_path animation.gif
 
 ### Experiments
 The experiments folder is organized as follow:
@@ -27,12 +94,6 @@ experiments/
     - augmentation/ - containing the model config including data augmentation and hyperparameter tuning
     - label_map.pbtxt
 ```
-
-## Prerequisites
-
-pip -r requirements.txt
-
-## Instructions
 
 ### Exploratory Data Analysis
 
