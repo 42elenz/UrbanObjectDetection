@@ -97,7 +97,7 @@ experiments/
 
 ### Exploratory Data Analysis
 
-For an inital data exploration, 10 images were read from the dataset and plotted including the corresponding ground truth bounding boxes. The bounding boxes were color coded to differentiate between labels, red for cars, blue for pedestrians and green for cyclists. The images revealed differing weather conditions, strongly fluctuating amount of target objects and various settings. Some of the pictures and graphs are provided below. For more plots look at the exploratory data analysis notebook.
+For an inital data exploration, 10 images were read from the dataset and plotted including the corresponding ground truth bounding boxes. The bounding boxes were color coded to differentiate between labels, red for cars, blue for pedestrians and green for cyclists. The images revealed differing weather conditions, strongly fluctuating amount of target objects and various settings. Some of the pictures and graphs are provided below. For more visualizatio got to the [exploratory data analysis notebook](https://github.com/solanhaben/UrbanObjectDetection/blob/main/Exploratory%20Data%20Analysis.ipynb).
 
 ![alt text](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/visual.png "Example Picture")
 
