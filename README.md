@@ -9,11 +9,11 @@ By using AI for object detection, the vehicle can process and analyze large amou
 
 # Setup
 
+I was able to use the Udacity-Workspace for this project that had all the necessary libraries and data already available. If you want to use a local setup, you can use the below instructions for a Docker container if using your own local GPU, or otherwise creating a similar environment on a cloud provider's GPU instance.
+
 ### Install Prerequisites
 
     pip -r requirements.txt
-
-I was able to use the Udacity-Workspace for this project that had all the necessary libraries and data already available. If you want to use a local setup, you can use the below instructions for a Docker container if using your own local GPU, or otherwise creating a similar environment on a cloud provider's GPU instance.
 
 ### Docker Setup
 
@@ -97,10 +97,6 @@ experiments/
 
 For an inital data exploration, 10 images were read from the dataset and plotted including the corresponding ground truth bounding boxes. The bounding boxes were color coded to differentiate between labels, red for cars, blue for pedestrians and green for cyclists. The images revealed differing weather conditions, strongly fluctuating amount of target objects and various settings. Some of the pictures and graphs are provided below. For more visualizatio got to the [exploratory data analysis notebook](https://github.com/solanhaben/UrbanObjectDetection/blob/main/Exploratory%20Data%20Analysis.ipynb).
 
-unaugmented image             |  augmented image
-:-------------------------:|:-------------------------:
-![](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/orig_img.png)  |  ![](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/augm_img.png)
-
 ![alt text](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/visual.png "Example Picture")
 
 For further exploration, 20.000 datapoints for taken from the dataset and statistically analysed:
@@ -146,6 +142,10 @@ For an IoU treshold average of [0.5, .95] Average Precision showed 0.000 over al
 
 Using the https://github.com/tensorflow/models/blob/master/research/object_detection/protos/preprocessor.proto file containing available augmentations in the Tf Object Detection API different modifications were explored and visualized. Based on the findings in the data exploration horizonal flipping was used to combat unbalanced centering of objects. To equalize the mostly dark picture discovered in the brightness analysis, random brightness adjustments were incorporated. Lastly to mimic weather conditions that distort the picture quality patching gaussian augmentation, random adjustment of contrast and saturation were applied.
 
+Unaugmented image             |  Augmented image
+:-------------------------:|:-------------------------:
+![](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/orig_img.png)  |  ![](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/augm_img.png)
+
 ## Hyperparameter Tuning
 
 To allow model convergence, the optimizer learning rate was adjusted to 0.004, the warmup learning rate to 0.0013333 and total steps were increased to 4000. Batch size was increased from 2 to 8 to better estimate the direction of the gradient but still garanty a fast enough learning for the scope of this course.
@@ -156,8 +156,11 @@ Compared to the reference model the loss decreased with training steps and reach
 
 ![alt text](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/imp_loss.png "Improved_Loss")
 
-
 For an IoU treshold average of [0.5, .95] Average Precision showed 0.149 over all images however the peak value at 0.753 for large area objects was a significant improvement. Average Recall also stayed quite low at 0.032 with a peak performance at 0.835 for large objects. The improved model overall was able to detect large objects to a much higher degree than the reference model but still needs to be further improved for small objects.
+
+Precision             |  Recall
+:-------------------------:|:-------------------------:
+![](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/Precision_validation.png)  |  ![](https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/Recall_validation.png)
 
 <img src="https://github.com/solanhaben/UrbanObjectDetection/blob/main/pictures/imp_metric.png" width="350">
 
