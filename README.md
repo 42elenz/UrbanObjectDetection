@@ -172,3 +172,8 @@ This gif the shows the improved model performance on a sample set of test-images
 ## Further improvements
 
 To further increase model performance other pre-trained models could be considered. On top of that more data especially including the underrepresented labels should be used. To better detect small objects increasing image capture resolution and model input resolution is advised and additional data augmentations such as random cropping and tiling should be considered. Due to lacking ressources and limited time these steps will be taken up in future improvements.
+
+
+##Acknowledgment
+
+This porject was done with Florian Binderreif as part of the Udacity Nanodegree programm. 
