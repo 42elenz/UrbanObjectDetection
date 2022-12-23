@@ -176,4 +176,4 @@ To further increase model performance other pre-trained models could be consider
 
 ##Acknowledgment
 
-This porject was done with Florian Binderreif as part of the Udacity Nanodegree programm. 
+This project was done with Florian Binderreif as part of the Udacity Nanodegree programm. 
